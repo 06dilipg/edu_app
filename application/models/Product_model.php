@@ -176,4 +176,14 @@ class Product_model extends CI_Model{
         $query = $this->db->query($sql, array(1));
         return $query->result_array();
       }
+      public function getData_PurchaseList(){
+        $sql = "SELECT * FROM `purchase`";
+        $query = $this->db->query($sql, array(1));
+        return $query->result_array();
+      }
+       public function get_viewPurchase($id){
+        $sql = "SELECT purchase_item.qty,purchase_item.price,product.product_code,product.product_name FROM product INNER JOIN purchase_item ON purchase_item.product_id=product.product_id WHERE purchase_item.purchase_id ='".$id."'";
+        $query = $this->db->query($sql);
+        return $query;
+      }
 }

@@ -624,6 +624,53 @@
             echo json_encode($output);  
            }
 
+
+        function fetchdata_PurchaseList(){
+                 $counter = 0;
+                $result = array('data' => array());
+                $data = $this->Product_model->getData_PurchaseList();
+                // echo $this->db->last_query(); 
+                foreach ($data as $key => $value) {
+                 
+                 $buttons = '';
+             
+                $buttons = '<a href="'.base_url().'index.php/admin/ManageInventory/viewPurchase?id='.$value['purchase_id'].'" type="button" class="text-gray m-r-15"><i class="mdi mdi-eye"></i></a>';
+                $buttons .= '<a href="'.base_url().'index.php/admin/ManageInventory/editPurchase?id='.$value['purchase_id'].'" class="text-gray m-r-15"><i class="ti-pencil"></i></a>';
+                 $result['data'][$key] = array(
+                 
+                  $value['refno'],
+                  $value['Bill_no'],
+                  $value['Voucher_no'],
+                  $value['buyer'],
+                  $value['purchase_date'],
+                  $value['purchase_status'],
+                   $buttons
+            
+         );
+      } // /foreach
+
+      echo json_encode($result);
+
+        }
+
+        function get_viewPurchase(){
+                 $id = $_GET['id'];  
+                $data4 = $this->Product_model->get_viewPurchase($id);
+                foreach($data4->result() as $row){ 
+                            $output ='<tr id="dynamic"><td><label class="control-label text-dark">Product Name</label><input  id="productName" name="productName[]" type="text" class="form-control form-control-sm productName" placeholder="Product Name"  data-pm="productName" value="'.$row->product_name.'" readonly /></td><td><label class="control-label text-dark">Product Code/SKU</label><input id="pcode" name="productCode" type="text" class="form-control form-control-sm"  placeholder="Product Code"  readonly value="'.$row->product_code.'" readonly/></td><td><label class="control-label text-dark">Quantity</label><input id="Quantity" name="Quantity[]" type="number"  class="form-control form-control-sm qty"   value="'.$row->qty.'" readonly/></td><td><label class="control-label text-dark">Price Per Unit </label><input name="Price[]" type="number" id="Price" class="form-control form-control-sm price"  placeholder="Price Per Unit" value="'.$row->price.'" readonly/></td><td style="display:none;"><label class="control-label text-dark">S Price</label><input name="SubPrice[]" type="number" class="form-control form-control-sm Subprice" required /></td></tr>';
+                             }
+                          
+                             echo $output;
+                    }
+         function get_viewPurchase1(){
+                 $id = $_GET['id'];  
+                $data4 = $this->Product_model->get_viewPurchase($id);
+                foreach($data4->result() as $row){ 
+                            $output ='<tr id="dynamic"><td><label class="control-label text-dark">Product Name</label><input  id="productName" name="productName[]" type="text" class="form-control form-control-sm productName" placeholder="Product Name"  data-pm="productName" value="'.$row->product_name.'" readonly /></td><td><label class="control-label text-dark">Product Code/SKU</label><input id="pcode" name="productCode" type="text" class="form-control form-control-sm"  placeholder="Product Code"  readonly value="'.$row->product_code.'" readonly/></td><td><label class="control-label text-dark">Quantity</label><input id="Quantity" name="Quantity[]" type="number"  class="form-control form-control-sm qty"   value="'.$row->qty.'" /></td><td><label class="control-label text-dark">Price Per Unit </label><input name="Price[]" type="number" id="Price" class="form-control form-control-sm price"  placeholder="Price Per Unit" value="'.$row->price.'"/></td><td style="display:none;"><label class="control-label text-dark">S Price</label><input name="SubPrice[]" type="number" class="form-control form-control-sm Subprice" required /></td></tr>';
+                             }
+                          
+                             echo $output;
+                    }            
            
            
        }

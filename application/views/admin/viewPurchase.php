@@ -89,22 +89,11 @@
                     <div class="card-body col-sm-12">
                         <div class="table-overflow">
                             <table id="dt-opt" class="table table-hover table-xl">
-                                
                                 <tbody id="createPurchaseBody">
-
-                                  <?php
-                                    $data4 = $this->db->query("SELECT purchase_item.qty,purchase_item.price,product.product_code,product.product_name FROM product INNER JOIN purchase_item ON purchase_item.product_id=product.product_id WHERE purchase_item.purchase_id ='".$id."'");
-                                      foreach($data4->result() as $row){ ?>
-                                     
-                               
-                                 <tr id="dynamic"><td><label class="control-label text-dark">Product Name</label><input  id="productName' + x + '" name="productName[]" type="text" class="form-control form-control-sm productName" placeholder="Product Name"  data-pm="productName" value="<?php echo $row->product_name;?>" readonly /></td><td><label class="control-label text-dark">Product Code/SKU</label><input id="pcode' + x + '" name="productCode" type="text" class="form-control form-control-sm"  placeholder="Product Code"  readonly value="<?php echo $row->product_code;?>" readonly/></td><td><label class="control-label text-dark">Quantity</label><input id="Quantity' + x + '" name="Quantity[]" type="number"  class="form-control form-control-sm qty"   value="<?php echo $row->qty;?>" readonly/></td><td><label class="control-label text-dark">Price Per Unit </label><input name="Price[]" type="number" id="Price'+x+'" class="form-control form-control-sm price"  placeholder=" Price Per Unit" value="<?php echo $row->price;?>" readonly/></td><td style="display:none;"><label class="control-label text-dark">S Price</label><input name="SubPrice[]" type="number" class="form-control form-control-sm Subprice" required /></td><td class="text-center font-size-18"><a class="text-gray  remove_field" href="#" data='+x+' ><i class="ti-trash"></i></td></tr>
-                                   <?php    }
-                                  ?>
- 
-
-                                </tbody>
+                                </tbody>    
+                                 
                                 <tfoot id="gtotal" align="center">
-                                  <tr id="total"> <td></td><td></td><td></td><td></td><td><label class="control-label text-dark">Grand Total </label><input type="number" id="grandtotalPrice" name="total_price" class="form-control form-control-sm" placeholder="Grand Total" readonly/></td></tr>
+                                  <tr id="total"> <td></td><td></td><td></td><td><label class="control-label text-dark">Grand Total </label><input type="number" id="grandtotalPrice" name="total_price" class="form-control form-control-sm" placeholder="Grand Total" readonly/></td></tr>
                                 </tfoot>
                             </table>
                         </div>
@@ -164,6 +153,18 @@
                                         }
                        });
              } 
+         get_viewPurchase();    
+
+       function get_viewPurchase(){
+                $.ajax({
+                     url:"<?php echo base_url(); ?>index.php/admin/ManageInventory/get_viewPurchase?id=<?php echo $id;?>",
+                     method:"POST",
+                     success:function(data){ 
+                                  $('#createPurchaseBody').html(data);
+                                         
+                                        }
+                       });
+              }      
     });
 
   </script>
