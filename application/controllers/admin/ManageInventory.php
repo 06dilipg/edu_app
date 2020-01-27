@@ -52,9 +52,18 @@
             $this->load->view("admin/footer");
             }
             public function listStock(){
+
+              $results['res'] = $this->Product_model->get_purchaseList1();
+               // $data['last'] =          $this->db->last_query();
+              foreach ($results['res'] as $row1) {
+                     $product_id = $row1->product_id;   
+                      $results['sql'] = $this->Product_model->get_stockList($product_id);
+              }
+             
+
             $this->load->view("admin/header");
             $this->load->view("admin/sidebar");
-            $this->load->view("admin/stock_list",$_GET);
+            $this->load->view("admin/stock_list",$results);
             $this->load->view("admin/footer");
             }
             public function outStock(){
@@ -277,29 +286,68 @@
         
 
         // 2 Inventory of Stock     
-
-          
-           
-            public function Stocklist(){
+          public function Stocklist(){
              $id= $this->input->post('productId');      
-            $response = array();
-            $data = array(
-            'category' => $this->input->post('category'),
-            'sub_category' => $this->input->post('subcategory'),
-            'product_name' => $this->input->post('product_name'),
-            'intitial_stock' => $this->input->post('intitial_stock') 
+             $response = array();
+             $data = array(
+              'category' => $this->input->post('category'),
+              'sub_category' => $this->input->post('subcategory'),
+              'product_name' => $this->input->post('product_name'),
+              'intitial_stock' => $this->input->post('intitial_stock') 
             );
             $update = $this->Product_model->Stocklist($id,$data);
             if($update == true) {
+              $response['success'] = true;
+              $response['messages'] = 'Succesfully Added Stock';
+            }
+            else {
+              $response['success'] = false;
+              $response['messages'] = 'Error in the database while creating the Stock';            
+            }
+            echo json_encode($response);
+         }
+         public function out_stock(){
+            $response = array();
+            $data = array(
+            'refno' => $this->input->post('refno'),
+            'user_id' => $this->input->post('user_id'),
+            'purpose_id' => $this->input->post('Clinical_vsit'),
+            'status' => $this->input->post('Status'),
+            'return_date' => $this->input->post('Return_date'),
+            'description' => $this->input->post('description') 
+            );
+            $create = $this->Product_model->outstock($data);
+            if($create == true) {
             $response['success'] = true;
-            $response['messages'] = 'Succesfully Added Stock';
+            $response['messages'] = 'Succesfully Added';
             }
             else {
             $response['success'] = false;
-            $response['messages'] = 'Error in the database while creating the Stock';            
+            $response['messages'] = 'Error in the database while creating';            
             }
-            echo json_encode($response);
-            }
+            $refno = $this->input->post('refno');
+          
+
+            $outstock_id = $this->db->query("SELECT `outstock_id` FROM `outstock` WHERE `refno`='".$refno."'")->row_array();
+               $oStockID = $outstock_id['outstock_id'];
+
+               $productId =    implode(',',$this->input->post('productId')); 
+               $Quantity =     implode(',',$this->input->post('Quantity'));
+               
+               
+               $pro_id = explode(",",$productId);
+               $pro_qty = explode(",",$Quantity);
+              
+
+                 $total_proId = count($pro_id);
+               for($y=0;$y<$total_proId;$y++){
+                                 
+                  $dat1 = $this->db->query("INSERT INTO `outstock_item`(`outstock_id`, `product_id`, `qty`) VALUES ('".$oStockID."','".$pro_id[$y]."','".$pro_qty[$y]."')");
+
+
+               }
+               echo json_encode($response);
+           }
             public function out_stock1(){
             $response = array();
             $data = array(
@@ -575,48 +623,7 @@
              echo json_encode($output);
             
           }  
-            public function out_stock(){
-            $response = array();
-            $data = array(
-            'refno' => $this->input->post('refno'),
-            'user_id' => $this->input->post('user_id'),
-            'purpose_id' => $this->input->post('Clinical_vsit'),
-            'status' => $this->input->post('Status'),
-            'return_date' => $this->input->post('Return_date'),
-            'description' => $this->input->post('description') 
-            );
-            $create = $this->Product_model->outstock($data);
-            if($create == true) {
-            $response['success'] = true;
-            $response['messages'] = 'Succesfully Added';
-            }
-            else {
-            $response['success'] = false;
-            $response['messages'] = 'Error in the database while creating';            
-            }
-            $refno = $this->input->post('refno');
-          
-
-            $outstock_id = $this->db->query("SELECT `outstock_id` FROM `outstock` WHERE `refno`='".$refno."'")->row_array();
-               $oStockID = $outstock_id['outstock_id'];
-
-               $productId =    implode(',',$this->input->post('productId')); 
-               $Quantity =     implode(',',$this->input->post('Quantity'));
-               
-               
-               $pro_id = explode(",",$productId);
-               $pro_qty = explode(",",$Quantity);
-              
-
-                 $total_proId = count($pro_id);
-               for($y=0;$y<$total_proId;$y++){
-                                 
-                  $dat1 = $this->db->query("INSERT INTO `outstock_item`(`outstock_id`, `product_id`, `qty`) VALUES ('".$oStockID."','".$pro_id[$y]."','".$pro_qty[$y]."')");
-
-
-               }
-               echo json_encode($response);
-           }
+            
            function search_qty(){
             $output = array();  
             $a =  $_POST["qty"];

@@ -30,6 +30,7 @@ header("Content-Type: text/html; charset=ISO-8859-1");
     <link href="<?php echo base_url('assets/css/materialdesignicons.min.css')?>" rel="stylesheet">
     <link href="<?php echo base_url('assets/css/animate.min.css')?>" rel="stylesheet">
     <link href="<?php echo base_url('assets/css/app.css')?>" rel="stylesheet">
+    <link href="<?php echo base_url('assets/css/auto_label.css')?>" rel="stylesheet">
 
 
 

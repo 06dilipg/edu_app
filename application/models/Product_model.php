@@ -95,13 +95,29 @@ class Product_model extends CI_Model{
       public function get_purchaseList(){
              $query = $this->db->get('purchase');
             return $query;
+      }
+      public function get_purchaseList1(){
+             $sql = $this->db->query('SELECT * FROM `product`');
+            return $sql->result();
       } 
+      public function get_stockList($product_id){
+          $sql = $this->db->query("SELECT sum(`qty`)-SUM(`return_qty`) AS  'stock'  FROM `outstock_item` WHERE `product_id`='".$product_id."'")->row_array();
+           return $sql;
+      }
+
       public function insert_purchaseItem($data){
             $this->db->insert_batch('purchase_item', $data);
       }
 
 
       // 2 Inventory of Stock 
+       public function Stocklist($id = null, $data = array())
+      {           
+            $this->db->where('product_id', $id);
+            $update = $this->db->update('product', $data);
+
+            return ($update == true) ? true : false;
+      }
       
       public function outstock($data = array()){
       if($data) {
@@ -193,13 +209,7 @@ class Product_model extends CI_Model{
         $query=$this->db->get('outstock');  
         return $query->result(); 
     }
-    public function Stocklist($id = null, $data = array())
-      {           
-            $this->db->where('product_id', $id);
-            $update = $this->db->update('product', $data);
-
-            return ($update == true) ? true : false;
-      }
+   
       public function getTableData_stockList()
       {
         $sql = "SELECT * FROM `product`";
