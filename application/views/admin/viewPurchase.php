@@ -7,6 +7,7 @@
  */
 ?>
 <!-- Add purchase START -->
+<?php $id = $_GET['id'];?>
 <div class="main-content">
     <div class="container-fluid">
         <div class="page-header">
@@ -89,8 +90,29 @@
                     <div class="card-body col-sm-12">
                         <div class="table-overflow">
                             <table id="dt-opt" class="table table-hover table-xl">
-                                <tbody id="createPurchaseBody">
-                                </tbody>    
+                                <?php foreach ($res as $row): $gtotal =    $row->qty*$row->price ?>
+                               
+                              <input type="hidden" name="purchase_item_id[]" value="<?php echo $row->purchase_item_id?>">
+                               
+                                 <tr id="dynamic">
+                                  <td>
+                                    <input type="hidden" name="productId[]"/ value="0">
+                                    <label class="control-label text-dark">Product Name</label>
+                                    <input  id="productName" name="productName[]" type="text" class="form-control form-control-sm productName" placeholder="Product Name"  value="<?php echo $row->product_name;?>" readonly />
+                                    <input type="hidden" name="pname[]" value="0" >
+                                  </td>
+                                  <td>
+                                    <label class="control-label text-dark">Product Code/SKU</label>
+                                    <input id="pcode" name="productCode[]" type="text" class="form-control form-control-sm"   placeholder="Product Code"  readonly value="<?php echo $row->product_code;?>"/></td>
+                                    <td>
+                                      <label class="control-label text-dark">Quantity</label><input id="Quantity' + x + '" name="Quantity[]" type="number"  class="form-control form-control-sm qty"   value="<?php echo $row->qty;?>"/></td>
+                                      <td><label class="control-label text-dark">Unit Price</label>
+                                        <input name="Price[]" type="number" id="Price" class="form-control form-control-sm price"  placeholder="Enter Price Per Unit" value="<?php echo $row->price;?>"/>
+                                        <input name="SubPrice[]" type="hidden" class="form-control form-control-sm Subprice"   value="<?php echo $gtotal;?>" />
+                                      </td></td>
+                                      </tr>
+                                <?php endforeach;?> 
+   
                                  
                                 <tfoot id="gtotal" align="center">
                                   <tr id="total"> <td></td><td></td><td></td><td><label class="control-label text-dark">Grand Total </label><input type="number" id="grandtotalPrice" name="total_price" class="form-control form-control-sm" placeholder="Grand Total" readonly/></td></tr>
@@ -153,18 +175,7 @@
                                         }
                        });
              } 
-         get_viewPurchase();    
-
-       function get_viewPurchase(){
-                $.ajax({
-                     url:"<?php echo base_url(); ?>index.php/admin/ManageInventory/get_viewPurchase?id=<?php echo $id;?>",
-                     method:"POST",
-                     success:function(data){ 
-                                  $('#createPurchaseBody').html(data);
-                                         
-                                        }
-                       });
-              }      
+             
     });
 
   </script>

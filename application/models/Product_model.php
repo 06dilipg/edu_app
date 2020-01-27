@@ -75,11 +75,7 @@ class Product_model extends CI_Model{
         $query=$this->db->get('purchase_item');  
         return $query->result(); 
        }
-        public function get_viewPurchase($id){
-        $sql = "SELECT purchase_item.qty,purchase_item.price,product.product_code,product.product_name FROM product INNER JOIN purchase_item ON purchase_item.product_id=product.product_id WHERE purchase_item.purchase_id ='".$id."'";
-        $query = $this->db->query($sql);
-        return $query;
-      }
+        
       // public function put_editPurchase($id,$pStatus,$pdate,$gPrice){
       //       $sql = "UPDATE `purchase` SET `purchase_status`='".$pStatus."',`purchase_date`='".$pdate."',`grand_total`='". $gPrice."' WHERE purchase_id='".$id."'";
       //       $query = $this->db->query($sql);
@@ -91,7 +87,10 @@ class Product_model extends CI_Model{
       //       return $query;
       // }
 
-     
+      public function fetchPro_editPurchase($id){
+         $sql = $this->db->query("SELECT purchase_item.qty,purchase_item.price,purchase_item.purchase_item_id, product.product_code,product.product_name FROM product INNER JOIN purchase_item ON purchase_item.product_id=product.product_id WHERE purchase_item.purchase_id ='".$id."'");
+         return $sql->result();
+      }
      
       public function get_purchaseList(){
              $query = $this->db->get('purchase');
@@ -100,6 +99,9 @@ class Product_model extends CI_Model{
       public function insert_purchaseItem($data){
             $this->db->insert_batch('purchase_item', $data);
       }
+
+
+      // 2 Inventory of Stock 
       
       public function outstock($data = array()){
       if($data) {

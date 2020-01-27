@@ -29,7 +29,7 @@
             }
             public function index(){
             $this->load->view("admin/header");
-            $this->load->view("admin/sidebar");
+            $this->load->view("admin/sidebar"); 
             $this->load->view("admin/add_product");
             $this->load->view("admin/footer");
             }
@@ -70,16 +70,21 @@
             $this->load->view("admin/footer");
             }
             public function editPurchase(){
-            $this->load->view("admin/header");
-            $this->load->view("admin/sidebar");
-            $this->load->view("admin/Edit_Purchase",$_GET);
-            $this->load->view("admin/footer");
+                
+                $id = $this->input->get('id', TRUE);
+                $results['res'] = $this->Product_model->fetchPro_editPurchase($id);
+                $this->load->view("admin/header");
+                $this->load->view("admin/sidebar");
+                $this->load->view("admin/Edit_Purchase",$results);
+                $this->load->view("admin/footer");
             }
             public function viewPurchase(){
-            $this->load->view("admin/header");
-            $this->load->view("admin/sidebar");
-            $this->load->view("admin/viewPurchase",$_GET);
-            $this->load->view("admin/footer");
+                  $id = $this->input->get('id', TRUE);
+                  $results['res'] = $this->Product_model->fetchPro_editPurchase($id);  
+                  $this->load->view("admin/header");
+                  $this->load->view("admin/sidebar");
+                  $this->load->view("admin/viewPurchase",$results);
+                  $this->load->view("admin/footer");
             }
             public function editStock(){
             $this->load->view("admin/header");
@@ -269,24 +274,9 @@
                                     }  
                                    echo json_encode($output);  
             }
-             function get_viewPurchase(){
-                 $id = $_GET['id'];  
-                $data4 = $this->Product_model->get_viewPurchase($id);
-                foreach($data4->result() as $row){ 
-                            $output ='<tr id="dynamic"><td><label class="control-label text-dark">Product Name</label><input  id="productName" name="productName[]" type="text" class="form-control form-control-sm productName" placeholder="Product Name"  data-pm="productName" value="'.$row->product_name.'" readonly /></td><td><label class="control-label text-dark">Product Code/SKU</label><input id="pcode" name="productCode" type="text" class="form-control form-control-sm"  placeholder="Product Code"  readonly value="'.$row->product_code.'" readonly/></td><td><label class="control-label text-dark">Quantity</label><input id="Quantity" name="Quantity[]" type="number"  class="form-control form-control-sm qty"   value="'.$row->qty.'" readonly/></td><td><label class="control-label text-dark">Price Per Unit </label><input name="Price[]" type="number" id="Price" class="form-control form-control-sm price"  placeholder="Price Per Unit" value="'.$row->price.'" readonly/></td><td style="display:none;"><label class="control-label text-dark">S Price</label><input name="SubPrice[]" type="text" class="form-control form-control-sm Subprice"  /></td></tr>';
-                             }
+        
 
-                             echo $output;
-                    }
-         function get_viewPurchase1(){
-                 $id = $_GET['id'];  
-                $data4 = $this->Product_model->get_viewPurchase($id);
-                foreach($data4->result() as $row){ 
-                            $output ='<tr id="dynamic"><td><label class="control-label text-dark">Product Name</label><input  id="productName" name="productName[]" type="text" class="form-control form-control-sm productName" placeholder="Product Name"  data-pm="productName" value="'.$row->product_name.'" readonly /></td><td><label class="control-label text-dark">Product Code/SKU</label><input id="pcode" name="productCode" type="text" class="form-control form-control-sm"  placeholder="Product Code"  readonly value="'.$row->product_code.'" readonly/></td><td><label class="control-label text-dark">Quantity</label><input id="Quantity" name="Quantity[]" type="number"  class="form-control form-control-sm qty"   value="'.$row->qty.'" /></td><td><label class="control-label text-dark">Price Per Unit </label><input name="Price[]" type="number" id="Price" class="form-control form-control-sm price"  placeholder="Price Per Unit" value="'.$row->price.'"/></td><td style="display:none;"><label class="control-label text-dark">S Price</label><input name="SubPrice[]" type="text" class="form-control form-control-sm Subprice"  /></td></tr>';
-                             }
-
-                             echo $output;
-                    }         
+        // 2 Inventory of Stock     
 
           
            
