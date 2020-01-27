@@ -99,6 +99,7 @@
             $this->load->view("admin/add_purchase1");
             $this->load->view("admin/footer");
             }
+            //category dropdown
             public function search_Category (){
                    $data  =    $this->Product_model->search_Category();
                    $output = ' <option value="">Select Category</option>';
@@ -111,6 +112,7 @@
                    echo $output;
            
             }
+            //Sub Category Deopdown
             public function search_subCategory (){
                   $id = $_POST["id"];
                   $data  =    $this->Product_model->search_SubCategory($id);
@@ -137,30 +139,46 @@
                   }
                   echo $output;
             }
+             //Autocomplete of Product
+          public function autocomplete_product(){
+                $postData = $this->input->post();
+                $data = $this->Product_model->get_autoProducts($postData);
+                echo json_encode($data);
+            }
+             //Autocomplete of User
+            public function autocomplete_Student(){
+                   $postData = $this->input->post();
+                   $data = $this->Product_model->get_autoStudents($postData);
+                   echo json_encode($data);
+            }
+
+
+           // Inventory purchase
+            
             public function createProduct(){
-            $response = array();
-            $data = array(
-            'product_code' => $this->input->post('product_code'),
-            'product_name' => $this->input->post('product_name'),
-            'category' => $this->input->post('category'),
-            'sub_category' => $this->input->post('subcategory'),   
-            'product_size' => $this->input->post('size'),   
-            'product_capacity' => $this->input->post('capacity'), 
-            'product_unit' => $this->input->post('unit'), 
-            'product_description' => $this->input->post('description')
-           
-            );
-            $create = $this->Product_model->create_product($data);
-            //  echo $this->db->last_query(); 
-            if($create == true) {
-            $response['success'] = true;
-            $response['messages'] = 'Succesfully Added';
-            }
-            else {
-            $response['success'] = false;
-            $response['messages'] = 'Error in the database while creating';            
-            }
-            echo json_encode($response);
+                  $response = array();
+                  $data = array(
+                  'product_code' => $this->input->post('product_code'),
+                  'product_name' => $this->input->post('product_name'),
+                  'category' => $this->input->post('category'),
+                  'sub_category' => $this->input->post('subcategory'),   
+                  'product_size' => $this->input->post('size'),   
+                  'product_capacity' => $this->input->post('capacity'), 
+                  'product_unit' => $this->input->post('unit'), 
+                  'product_description' => $this->input->post('description')
+                 
+                  );
+                  $create = $this->Product_model->create_product($data);
+                  //  echo $this->db->last_query(); 
+                  if($create == true) {
+                  $response['success'] = true;
+                  $response['messages'] = 'Succesfully Added';
+                  }
+                  else {
+                  $response['success'] = false;
+                  $response['messages'] = 'Error in the database while creating';            
+                  }
+                  echo json_encode($response);
             }
             //add purchase
             public function createPruchase(){
@@ -201,37 +219,76 @@
                   }
                   echo json_encode($response);
            }
-           public function get_purchaseList(){
-                  $counter = 0;
-                 // $data = $this->Product_model->get_purchaseList(); 
-                 // echo $this->db->last_query(); 
-                 // $counter = 0;
-                            $data = $this->db->query("SELECT * FROM `purchase`"); 
-                                  foreach($data->result() as $row){  $id=$row->purchase_id; 
-                           
-                        
-                            
+          public  function fetchdata_PurchaseList(){
+                $counter = 0;
+                $result = array('data' => array());
+                $data = $this->Product_model->getData_PurchaseList();
+                foreach ($data as $key => $value) {
+                 $buttons = '';
+                 $buttons = '<a href="'.base_url().'index.php/admin/ManageInventory/viewPurchase?id='.$value['purchase_id'].'" type="button" class="text-gray m-r-15"><i class="mdi mdi-eye"></i></a>';
+                $buttons .= '<a href="'.base_url().'index.php/admin/ManageInventory/editPurchase?id='.$value['purchase_id'].'" class="text-gray m-r-15"><i class="ti-pencil"></i></a>';
+                 $result['data'][$key] = array(
+                 
+                  $value['refno'],
+                  $value['Bill_no'],
+                  $value['Voucher_no'],
+                  $value['buyer'],
+                  $value['purchase_date'],
+                  $value['purchase_status'],
+                   $buttons
+                 );
+              } 
+            echo json_encode($result);
 
-                        
-                        
-                        $output ='  <tr data-toggle="collapse" data-target=".demo1" class="accordion-toggle">
-                              <td>'.++$counter.'</td>
-                              <td><?php echo $row->refno;?></td>
-                              <td><?php echo $row->Bill_no;?></td>
-                              <td><?php echo $row->Voucher_no;?></td>
-                              <td><?php echo $row->buyer;?></td>
-                              <td><?php echo $row->purchase_date;?></td>
-                              <td><?php echo $row->purchase_status;?></td>
-                              <td class="text-center font-size-18">
-                                   <a href="<?php echo base_url(); ?>index.php/admin/ManageInventory/viewPurchase?id=<?php echo $id;?>"  class="text-gray m-r-15" >  <i class="mdi mdi-eye"></i></a>
-                                  <a href="<?php echo base_url(); ?>index.php/admin/ManageInventory/editPurchase?id=<?php echo $id;?>" class="text-gray m-r-15"><i class="ti-pencil"></i></a>
-                              </td>
-                          </tr>';
-                         
+        }
+       public function fetch_purchase(){
+                     $id = $_GET['id'];     
+                     $data  =   $this->Product_model->fetch_purchase($id);
+                   
+                     foreach($data as $row){ 
+
+                                      
+                                      $output['refno'] = $row->refno;  
+                                      $output['buyer'] = $row->buyer;
+                                      $output['Bill_no'] = $row->Bill_no;
+                                      $output['Voucher_no'] = $row->Voucher_no;
+                                      $output['purchase_status'] = $row->purchase_status;
+                                      $output['purchase_date'] = $row->purchase_date;
+                                       $output['grand_total'] = $row->grand_total;
+                                    }  
+                                   echo json_encode($output);  
+        }
+       public function fetch_purchaseProduct(){
+                     $id = $_GET['id'];     
+                     $data  =   $this->Product_model->fetch_purchaseProduct($id);
+                     foreach($data as $row){ 
+                                      $output['product_id'] = $row->product_id;  
+                                      $output['qty'] = $row->qty;
+                                      $output['price'] = $row->price;
+                                    
+                                    }  
+                                   echo json_encode($output);  
+            }
+             function get_viewPurchase(){
+                 $id = $_GET['id'];  
+                $data4 = $this->Product_model->get_viewPurchase($id);
+                foreach($data4->result() as $row){ 
+                            $output ='<tr id="dynamic"><td><label class="control-label text-dark">Product Name</label><input  id="productName" name="productName[]" type="text" class="form-control form-control-sm productName" placeholder="Product Name"  data-pm="productName" value="'.$row->product_name.'" readonly /></td><td><label class="control-label text-dark">Product Code/SKU</label><input id="pcode" name="productCode" type="text" class="form-control form-control-sm"  placeholder="Product Code"  readonly value="'.$row->product_code.'" readonly/></td><td><label class="control-label text-dark">Quantity</label><input id="Quantity" name="Quantity[]" type="number"  class="form-control form-control-sm qty"   value="'.$row->qty.'" readonly/></td><td><label class="control-label text-dark">Price Per Unit </label><input name="Price[]" type="number" id="Price" class="form-control form-control-sm price"  placeholder="Price Per Unit" value="'.$row->price.'" readonly/></td><td style="display:none;"><label class="control-label text-dark">S Price</label><input name="SubPrice[]" type="text" class="form-control form-control-sm Subprice"  /></td></tr>';
                              }
 
                              echo $output;
-           }
+                    }
+         function get_viewPurchase1(){
+                 $id = $_GET['id'];  
+                $data4 = $this->Product_model->get_viewPurchase($id);
+                foreach($data4->result() as $row){ 
+                            $output ='<tr id="dynamic"><td><label class="control-label text-dark">Product Name</label><input  id="productName" name="productName[]" type="text" class="form-control form-control-sm productName" placeholder="Product Name"  data-pm="productName" value="'.$row->product_name.'" readonly /></td><td><label class="control-label text-dark">Product Code/SKU</label><input id="pcode" name="productCode" type="text" class="form-control form-control-sm"  placeholder="Product Code"  readonly value="'.$row->product_code.'" readonly/></td><td><label class="control-label text-dark">Quantity</label><input id="Quantity" name="Quantity[]" type="number"  class="form-control form-control-sm qty"   value="'.$row->qty.'" /></td><td><label class="control-label text-dark">Price Per Unit </label><input name="Price[]" type="number" id="Price" class="form-control form-control-sm price"  placeholder="Price Per Unit" value="'.$row->price.'"/></td><td style="display:none;"><label class="control-label text-dark">S Price</label><input name="SubPrice[]" type="text" class="form-control form-control-sm Subprice"  /></td></tr>';
+                             }
+
+                             echo $output;
+                    }         
+
+          
            
             public function Stocklist(){
              $id= $this->input->post('productId');      
@@ -359,49 +416,9 @@
             $data = $this->Product_model->getUsers($postData);
             echo json_encode($data);
             }
-            public function autocomplete_product(){
-            // POST data
-            $postData = $this->input->post();
-            // Get data
-            $data = $this->Product_model->get_autoProducts($postData);
-            echo json_encode($data);
-            }
-            public function autocomplete_Student(){
-            // POST data
-            $postData = $this->input->post();
-            // Get data
-            $data = $this->Product_model->get_autoStudents($postData);
-            echo json_encode($data);
-            }
+           
 
-            function fetch_purchase(){
-                     $id = $_GET['id'];     
-                     $data  =   $this->Product_model->fetch_purchase($id);
-                   
-                     foreach($data as $row){ 
-
-                                      
-                                      $output['refno'] = $row->refno;  
-                                      $output['buyer'] = $row->buyer;
-                                      $output['Bill_no'] = $row->Bill_no;
-                                      $output['Voucher_no'] = $row->Voucher_no;
-                                      $output['purchase_status'] = $row->purchase_status;
-                                      $output['purchase_date'] = $row->purchase_date;
-                                       $output['grand_total'] = $row->grand_total;
-                                    }  
-                                   echo json_encode($output);  
-            }
-            function fetch_purchaseProduct(){
-                     $id = $_GET['id'];     
-                     $data  =   $this->Product_model->fetch_purchaseProduct($id);
-                     foreach($data as $row){ 
-                                      $output['product_id'] = $row->product_id;  
-                                      $output['qty'] = $row->qty;
-                                      $output['price'] = $row->price;
-                                    
-                                    }  
-                                   echo json_encode($output);  
-            }
+            
              function fetch_stockout(){
                      $id = $_GET['id'];     
                      $data  =   $this->Product_model->fetch_stockout($id);
@@ -625,52 +642,9 @@
            }
 
 
-        function fetchdata_PurchaseList(){
-                 $counter = 0;
-                $result = array('data' => array());
-                $data = $this->Product_model->getData_PurchaseList();
-                // echo $this->db->last_query(); 
-                foreach ($data as $key => $value) {
-                 
-                 $buttons = '';
-             
-                $buttons = '<a href="'.base_url().'index.php/admin/ManageInventory/viewPurchase?id='.$value['purchase_id'].'" type="button" class="text-gray m-r-15"><i class="mdi mdi-eye"></i></a>';
-                $buttons .= '<a href="'.base_url().'index.php/admin/ManageInventory/editPurchase?id='.$value['purchase_id'].'" class="text-gray m-r-15"><i class="ti-pencil"></i></a>';
-                 $result['data'][$key] = array(
-                 
-                  $value['refno'],
-                  $value['Bill_no'],
-                  $value['Voucher_no'],
-                  $value['buyer'],
-                  $value['purchase_date'],
-                  $value['purchase_status'],
-                   $buttons
-            
-         );
-      } // /foreach
+       
 
-      echo json_encode($result);
-
-        }
-
-        function get_viewPurchase(){
-                 $id = $_GET['id'];  
-                $data4 = $this->Product_model->get_viewPurchase($id);
-                foreach($data4->result() as $row){ 
-                            $output ='<tr id="dynamic"><td><label class="control-label text-dark">Product Name</label><input  id="productName" name="productName[]" type="text" class="form-control form-control-sm productName" placeholder="Product Name"  data-pm="productName" value="'.$row->product_name.'" readonly /></td><td><label class="control-label text-dark">Product Code/SKU</label><input id="pcode" name="productCode" type="text" class="form-control form-control-sm"  placeholder="Product Code"  readonly value="'.$row->product_code.'" readonly/></td><td><label class="control-label text-dark">Quantity</label><input id="Quantity" name="Quantity[]" type="number"  class="form-control form-control-sm qty"   value="'.$row->qty.'" readonly/></td><td><label class="control-label text-dark">Price Per Unit </label><input name="Price[]" type="number" id="Price" class="form-control form-control-sm price"  placeholder="Price Per Unit" value="'.$row->price.'" readonly/></td><td style="display:none;"><label class="control-label text-dark">S Price</label><input name="SubPrice[]" type="number" class="form-control form-control-sm Subprice" required /></td></tr>';
-                             }
-                          
-                             echo $output;
-                    }
-         function get_viewPurchase1(){
-                 $id = $_GET['id'];  
-                $data4 = $this->Product_model->get_viewPurchase($id);
-                foreach($data4->result() as $row){ 
-                            $output ='<tr id="dynamic"><td><label class="control-label text-dark">Product Name</label><input  id="productName" name="productName[]" type="text" class="form-control form-control-sm productName" placeholder="Product Name"  data-pm="productName" value="'.$row->product_name.'" readonly /></td><td><label class="control-label text-dark">Product Code/SKU</label><input id="pcode" name="productCode" type="text" class="form-control form-control-sm"  placeholder="Product Code"  readonly value="'.$row->product_code.'" readonly/></td><td><label class="control-label text-dark">Quantity</label><input id="Quantity" name="Quantity[]" type="number"  class="form-control form-control-sm qty"   value="'.$row->qty.'" /></td><td><label class="control-label text-dark">Price Per Unit </label><input name="Price[]" type="number" id="Price" class="form-control form-control-sm price"  placeholder="Price Per Unit" value="'.$row->price.'"/></td><td style="display:none;"><label class="control-label text-dark">S Price</label><input name="SubPrice[]" type="number" class="form-control form-control-sm Subprice" required /></td></tr>';
-                             }
-                          
-                             echo $output;
-                    }            
+                   
            
            
        }

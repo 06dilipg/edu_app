@@ -94,6 +94,35 @@
 
                                 </thead>
                                 <tbody id="createPurchaseBody">
+                                   <?php
+                                    $data4 = $this->db->query("SELECT purchase_item.qty,purchase_item.price,purchase_item.purchase_item_id, product.product_code,product.product_name FROM product INNER JOIN purchase_item ON purchase_item.product_id=product.product_id WHERE purchase_item.purchase_id ='".$id."'");
+                                      foreach($data4->result() as $row){ 
+                                        
+                                         $gtotal =    $row->qty*$row->price
+                                        ?>
+                                     <input type="hidden" name="purchase_item_id[]" value="<?php echo $row->purchase_item_id?>">
+                               
+                                 <tr id="dynamic">
+                                  <td>
+                                    <input type="hidden" name="productId[]"/ value="0">
+                                    <label class="control-label text-dark">Product Name</label>
+                                    <input  id="productName" name="productName[]" type="text" class="form-control form-control-sm productName" placeholder="Product Name"  value="<?php echo $row->product_name;?>" readonly />
+                                    <input type="hidden" name="pname[]" value="0" >
+                                  </td>
+                                  <td>
+                                    <label class="control-label text-dark">Product Code/SKU</label>
+                                    <input id="pcode" name="productCode[]" type="text" class="form-control form-control-sm"   placeholder="Product Code"  readonly value="<?php echo $row->product_code;?>"/></td>
+                                    <td>
+                                      <label class="control-label text-dark">Quantity</label><input id="Quantity' + x + '" name="Quantity[]" type="number"  class="form-control form-control-sm qty"   value="<?php echo $row->qty;?>"/></td>
+                                      <td><label class="control-label text-dark">Unit Price</label>
+                                        <input name="Price[]" type="number" id="Price" class="form-control form-control-sm price"  placeholder="Enter Price Per Unit" value="<?php echo $row->price;?>"/>
+                                        <input name="SubPrice[]" type="hidden" class="form-control form-control-sm Subprice"   value="<?php echo $gtotal;?>" />
+                                      </td></td>
+                                      </tr>
+                                   <?php    }
+                                  ?>
+ 
+
                                 </tbody>
                                 <tfoot id="gtotal" align="center">
                                   <tr id="total"> <td></td><td></td><td></td><td><label class="control-label text-dark">Grand Total </label><input type="number" id="grandtotalPrice" name="total_price" class="form-control form-control-sm" placeholder="Grand Total" readonly/></td></tr>
@@ -126,6 +155,17 @@
 <script type="text/javascript">
     /* Jquery for change in add purchase field.*/
     $(document).ready(function () {
+       get_viewPurchase1();    
+       function get_viewPurchase1(){
+                $.ajax({
+                     url:"<?php echo base_url(); ?>index.php/admin/ManageInventory/get_viewPurchase1?id=<?php echo $id;?>",
+                     method:"POST",
+                     success:function(data){ 
+                                  $('#createPurchaseBody').html(data);
+                                         
+                                        }
+                       });
+              } 
         fetch_data();
         function fetch_data(){  
                  $.ajax({
@@ -283,17 +323,7 @@
           });
 
 
-        get_viewPurchase1();    
-       function get_viewPurchase1(){
-                $.ajax({
-                     url:"<?php echo base_url(); ?>index.php/admin/ManageInventory/get_viewPurchase1?id=<?php echo $id;?>",
-                     method:"POST",
-                     success:function(data){ 
-                                  $('#createPurchaseBody').html(data);
-                                         
-                                        }
-                       });
-              } 
+       
  
  
     

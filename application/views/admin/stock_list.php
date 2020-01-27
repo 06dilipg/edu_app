@@ -1,16 +1,5 @@
 <style type="text/css">
-  /*.ui-autocomplete-input {
-  border: none; 
-  font-size: 14px;
-  width: 300px;
-  height: 24px;
-  margin-bottom: 5px;
-  padding-top: 2px;
-  border: 1px solid #DDD !important;
-  padding-top: 0px !important;
-  z-index: 1511;
-  position: relative;
-}*/
+ 
 .ui-menu .ui-menu-item a {
   font-size: 12px;
 }
@@ -138,7 +127,7 @@
               <label>Category*</label>
               <select class="form-control form-control-sm" id="category" name="category" required="required">
                        <option value="">Select Category</option>
-                              <?php  $data = $this->db->query("SELECT * FROM `category`");
+                              <?php  $data = $this->db->query("SELECT * FROM `product_category`");
                                       foreach($data->result() as $row) {              ?>
                                              <option class="form-control form-control-sm" id="<?php echo $row->category_id;?>" data-id="<?php echo $row->category_id;?>" value="<?php echo $row->category_id; ?>"><?php echo $row->category_name; ?></option>
                                               <?php  } ?>
@@ -189,7 +178,7 @@
               <label>Category</label>
               <select class="form-control form-control-sm" id="category" name="category" required="required" readonly>
                        <option value="">Select Category</option>
-                              <?php  $data = $this->db->query("SELECT * FROM `category`");
+                              <?php  $data = $this->db->query("SELECT * FROM `product_category`");
                                       foreach($data->result() as $row) {              ?>
                                              <option class="form-control form-control-sm" id="<?php echo $row->category_id;?>" data-id="<?php echo $row->category_id;?>" value="<?php echo $row->category_id; ?>"><?php echo $row->category_name; ?></option>
                                               <?php  } ?>

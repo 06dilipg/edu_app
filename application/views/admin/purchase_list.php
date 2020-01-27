@@ -49,18 +49,6 @@
          'order': []
          });
       
-   
-         fetch_data();
-         function fetch_data()  
-            {  
-             $.ajax({
-                  url:"<?php echo base_url(); ?>index.php/admin/ManageInventory/get_purchaseList", 
-                  method:"POST",
-                  success:function(data){
-                      $('#table_data').html(data);
-                  }
-              });
-           } 
     });
   </script>
  

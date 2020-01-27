@@ -14,18 +14,85 @@ class Product_model extends CI_Model{
              $query = $this->db->get('product_subCategory');
              return $query;
       }
+      public function get_autoProducts($postData){
+             $response = array();
+            if(isset($postData['search']) ){
+            // Select record
+            $this->db->select('*');
+            $this->db->where("product_name like '%".$postData['search']."%' ");
+            $records = $this->db->get('product')->result();
+            foreach($records as $row ){
+            $response[] = array("value"=>$row->product_code,"label"=>$row->product_name,"id"=>$row->product_id,"stock"=>$row->intitial_stock);
+            }
+            }
+            return $response;
+      }
+      public function get_autoStudents($postData){
+            $response = array();
+            if(isset($postData['search']) ){
+            // Select record
+            $this->db->select('*');
+            $this->db->where("first_name like '%".$postData['search']."%' OR last_name like '%".$postData['search']."%' ");
+            $records = $this->db->get('user')->result();
+            foreach($records as $row ){
+            $fullname = $row->first_name.' '.$row->last_name;
+            $response[] = array("value"=>$fullname,"label"=>$fullname,"id"=>$row->user_id);
+            }
+            }
+            return $response;
+      }
+       // Inventory purchase
+       public function create_product($data = array()){
+             if($data) {
+             $create = $this->db->insert('product', $data);
+              return ($create == true) ? true : false;
+      }
+      }
+      public function create_purchase($data = array()){
+            if($data) {
+            $create = $this->db->insert('purchase', $data);
+            return ($create == true) ? true : false;
+            }
+      }
+       function fetch_purchase($id){
+        $this->db->where("purchase_id", $id);  
+        $query=$this->db->get('purchase');  
+        return $query->result(); 
+    }
       public function fetch_purchaseID($refno){
              $this->db->select('purchase_id');
              $this->db->where("refno",$refno);
              $query = $this->db->get('purchase');
              return $query;
       }
-      public function create_product($data = array()){
-      if($data) {
-      $create = $this->db->insert('product', $data);
-      return ($create == true) ? true : false;
+       public function getData_PurchaseList(){
+              $sql = "SELECT * FROM `purchase`";
+              $query = $this->db->query($sql, array(1));
+              return $query->result_array();
       }
+       public function fetch_purchaseProduct($id){
+        $this->db->where("purchase_id", $id);  
+        $query=$this->db->get('purchase_item');  
+        return $query->result(); 
+       }
+        public function get_viewPurchase($id){
+        $sql = "SELECT purchase_item.qty,purchase_item.price,product.product_code,product.product_name FROM product INNER JOIN purchase_item ON purchase_item.product_id=product.product_id WHERE purchase_item.purchase_id ='".$id."'";
+        $query = $this->db->query($sql);
+        return $query;
       }
+      // public function put_editPurchase($id,$pStatus,$pdate,$gPrice){
+      //       $sql = "UPDATE `purchase` SET `purchase_status`='".$pStatus."',`purchase_date`='".$pdate."',`grand_total`='". $gPrice."' WHERE purchase_id='".$id."'";
+      //       $query = $this->db->query($sql);
+      //       return $query;
+      // }
+      // public function get_purchase_id($refno){
+      //      $sql = "SELECT `purchase_id` FROM `purchase` WHERE `refno`='".$refno."'";
+      //      $query = $this->db->query($sql)->row_array();
+      //       return $query;
+      // }
+
+     
+     
       public function get_purchaseList(){
              $query = $this->db->get('purchase');
             return $query;
@@ -33,12 +100,7 @@ class Product_model extends CI_Model{
       public function insert_purchaseItem($data){
             $this->db->insert_batch('purchase_item', $data);
       }
-      public function create_purchase($data = array()){
-      if($data) {
-      $create = $this->db->insert('purchase', $data);
-      return ($create == true) ? true : false;
-      }
-      }
+      
       public function outstock($data = array()){
       if($data) {
       $create = $this->db->insert('outstock', $data);
@@ -120,44 +182,10 @@ class Product_model extends CI_Model{
       }
       return $response;
       }
-      function get_autoProducts($postData){
-      $response = array();
-      if(isset($postData['search']) ){
-      // Select record
-      $this->db->select('*');
-      $this->db->where("product_name like '%".$postData['search']."%' ");
-      $records = $this->db->get('product')->result();
-      foreach($records as $row ){
-      $response[] = array("value"=>$row->product_code,"label"=>$row->product_name,"id"=>$row->product_id,"stock"=>$row->intitial_stock);
-      }
-      }
-      return $response;
-      }
-      function get_autoStudents($postData){
-      $response = array();
-      if(isset($postData['search']) ){
-      // Select record
-      $this->db->select('*');
-      $this->db->where("first_name like '%".$postData['search']."%' OR last_name like '%".$postData['search']."%' ");
-      $records = $this->db->get('user')->result();
-      foreach($records as $row ){
-      $fullname = $row->first_name.' '.$row->last_name;
-      $response[] = array("value"=>$fullname,"label"=>$fullname,"id"=>$row->user_id);
-      }
-      }
-      return $response;
-      }
+      
 
-      function fetch_purchase($id){
-        $this->db->where("purchase_id", $id);  
-        $query=$this->db->get('purchase');  
-        return $query->result(); 
-    }
-     function fetch_purchaseProduct($id){
-        $this->db->where("purchase_id", $id);  
-        $query=$this->db->get('purchase_item');  
-        return $query->result(); 
-    }
+     
+    
     function fetch_stockout($id){
         $this->db->where("outstock_id", $id);  
         $query=$this->db->get('outstock');  
@@ -176,14 +204,6 @@ class Product_model extends CI_Model{
         $query = $this->db->query($sql, array(1));
         return $query->result_array();
       }
-      public function getData_PurchaseList(){
-        $sql = "SELECT * FROM `purchase`";
-        $query = $this->db->query($sql, array(1));
-        return $query->result_array();
-      }
-       public function get_viewPurchase($id){
-        $sql = "SELECT purchase_item.qty,purchase_item.price,product.product_code,product.product_name FROM product INNER JOIN purchase_item ON purchase_item.product_id=product.product_id WHERE purchase_item.purchase_id ='".$id."'";
-        $query = $this->db->query($sql);
-        return $query;
-      }
+     
+      
 }
